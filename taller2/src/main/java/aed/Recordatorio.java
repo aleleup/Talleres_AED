@@ -27,14 +27,17 @@ public class Recordatorio {
     @Override
     public String toString() {
         // Implementar
-        return atrMensaje   + " @ " + atrFecha+ " " + atrHorario;
+        return atrMensaje + " @ " + atrFecha+ " " + atrHorario;
     }
 
     @Override
     public boolean equals(Object otro) {
         if (otro != null && otro.getClass() == this.getClass() ){
             Recordatorio otroRecordatorio = (Recordatorio) otro;
-            return otroRecordatorio.horario() == atrHorario && otroRecordatorio.fecha() == atrFecha && otroRecordatorio.atrMensaje == atrMensaje;
+                return otroRecordatorio.horario().equals(atrHorario) && 
+                otroRecordatorio.fecha().equals(atrFecha) && 
+                otroRecordatorio.mensaje().equals(atrMensaje)
+                ;
         }
         return false;
     }
