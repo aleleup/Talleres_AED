@@ -50,6 +50,14 @@ class ABBTests {
         assertTrue(conjunto.pertenece(44));
         assertTrue(conjunto.pertenece(45));
         assertEquals(3, conjunto.cardinal());
+    @Test
+    void insertar_elemento_repetido() {
+        ABB<Integer> conjunto = new ABB<Integer>();
+
+        /*
+         * ___2___
+         * _1 _ 5_
+         * . . 3 7
     }
 
     @Test
@@ -103,6 +111,20 @@ class ABBTests {
         assertEquals(3, conjunto.cardinal());
         assertEquals("Chubut", conjunto.minimo());
         assertEquals("La Pampa", conjunto.maximo());
+
+    @Test
+    void insertar_un_elemento() {
+        ABB<Integer> conjunto = new ABB<Integer>();
+
+        conjunto.insertar(42);
+
+        assertEquals(1, conjunto.cardinal());
+        assertTrue(conjunto.pertenece(42));
+    }
+
+    @Test
+    void insertar_izquierda() {
+        ABB<Integer> conjunto = new ABB<Integer>();
 
         conjunto.insertar("Catamarca");
         assertEquals(4, conjunto.cardinal());

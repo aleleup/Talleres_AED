@@ -5,36 +5,66 @@ import java.util.*;
 // Todos los tipos de datos "Comparables" tienen el método compareTo()
 // elem1.compareTo(elem2) devuelve un entero. Si es mayor a 0, entonces elem1 > elem2
 public class ABB<T extends Comparable<T>> {
-    // Agregar atributos privados del Conjunto
+    private Nodo root;
+    private Int length;
 
     private class Nodo {
-        // Agregar atributos privados del Nodo
+        public Nodo padre;
+        public Nodo hijoMayor;
+        public Nodo hijoMenor;
+        public T val;
 
-        // Crear Constructor del nodo
+        public void Nodo(T val){
+            this.val = val;
+
+        }
+
     }
 
     public ABB() {
-        throw new UnsupportedOperationException("No implementada aun");
+        root = null;
+        length = 0;
     }
 
     public int cardinal() {
-        throw new UnsupportedOperationException("No implementada aun");
+        return length;
     }
 
     public T minimo(){
-        throw new UnsupportedOperationException("No implementada aun");
+        Nodo actual =  root;
+        while (actual.hijoMenor != null){
+            actual = hijoMenor;
+        };
+        return actual.val;
     }
 
     public T maximo(){
-        throw new UnsupportedOperationException("No implementada aun");
-    }
+        Nodo actual =  root;
+        while (actual.hijoMayor != null){
+            actual = hijoMayor;
+        };
+        return actual.val;    }
 
     public void insertar(T elem){
         throw new UnsupportedOperationException("No implementada aun");
     }
 
+
+    private pertenceRecursivo(Nodo nodo, T elem){
+        if (nodo == )
+        if (t > nodo.val){
+            return pertenece(nodo.hijoMayor, elem);
+        }
+
+        if (t < nodo.val){
+            return pertenece(nodo.hijoMayor, elem);
+        }
+    };
+
+
     public boolean pertenece(T elem){
-        throw new UnsupportedOperationException("No implementada aun");
+        Nodo actual =  root;
+        return pertenceRecursivo(actual, elem);
     }
 
     public void eliminar(T elem){
