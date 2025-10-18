@@ -1,6 +1,6 @@
 package aed;
 
-public class ListaEnlazada<T>  {
+public class ListaEnlazada<T> implements Secuencia<T>  {
     private Nodo primero;
     private Nodo ultimo;
 
@@ -92,7 +92,6 @@ public class ListaEnlazada<T>  {
 
     public void eliminar(int i) {
         Nodo nodoAEliminar = obtenerNodo(i);
-        System.out.println(nodoAEliminar.valor);
 
         Nodo anteriorAEliminar = nodoAEliminar.anterior;
         Nodo siguienteAEliminar = nodoAEliminar.siguiente;
