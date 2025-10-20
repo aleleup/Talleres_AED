@@ -114,6 +114,12 @@ public class ABB<T extends Comparable<T>> {
             Nodo sucesor = inmediatoSucesor(nodoAEliminar);
             sucesorDadoTomaLugar(nodoAEliminar, sucesor);
             sucesor.hijoMenor = nodoAEliminar.hijoMenor;
+            nodoAEliminar.hijoMenor.padre = sucesor;
+            
+            if (sucesor != nodoAEliminar.hijoMayor){
+            nodoAEliminar.hijoMayor.padre = sucesor;
+            sucesor.hijoMayor = nodoAEliminar.hijoMayor;
+        }
         }
         length--;
     };
