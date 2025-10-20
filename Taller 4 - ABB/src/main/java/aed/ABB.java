@@ -31,11 +31,8 @@ public class ABB<T extends Comparable<T>> {
     }
 
     public T minimo(){
-        Nodo actual =  root;
-        while (actual.hijoMenor != null){
-            actual = actual.hijoMenor;
-        };
-        return actual.val;
+        Nodo nodoMinimo = minimoAPartirDe(root);
+        return nodoMinimo.val;
     }
 
     public T maximo(){
@@ -72,9 +69,9 @@ public class ABB<T extends Comparable<T>> {
     };
 
     private void insertarRecursivo(Nodo nodo, T elem ){
-
+        //elem ya está en ABB
         if (elem.compareTo(nodo.val) == 0) return;
-
+        // elem > nodo.val --> (nodo.hijoMayor == null --> se agrega elem como hijo mayor de nodo) v (nodo.hijoMayor != null --> recursividad con nodo.hijoMayor)
         if (elem.compareTo(nodo.val) > 0){
             if (nodo.hijoMayor == null){
                 Nodo nuevoNodo = new Nodo(elem);
@@ -85,10 +82,8 @@ public class ABB<T extends Comparable<T>> {
             } else{
                 insertarRecursivo(nodo.hijoMayor, elem);
             }
-
         };
-
-
+        // elem < nodo.val --> (nodo.hijoMenor == null --> se agrega elem como hijo Menor de nodo) v (nodo.hijoMenor != null --> recursividad con nodo.hijoMenor)
         if (elem.compareTo(nodo.val) < 0){
             if (nodo.hijoMenor == null){
                 Nodo nuevoNodo = new Nodo(elem);
@@ -107,39 +102,25 @@ public class ABB<T extends Comparable<T>> {
         return nodoABuscar!= null && nodoABuscar.val == elem;
     }
 
-    // private Boolean pertenceRecursivo(Nodo nodo, T elem){
-    //     if (nodo == null) return false;
-
-    //     if (elem.compareTo(nodo.val) == 0) return true;
-
-    //     if (elem.compareTo(nodo.val) > 0){
-    //         return pertenceRecursivo(nodo.hijoMayor, elem);
-    //     }
-
-    //     if (elem.compareTo(nodo.val) < 0){
-    //         return pertenceRecursivo(nodo.hijoMenor, elem);
-    //     }
-
-    //     return false;
-    // };
-
-
     public void eliminar(T elem){
         Nodo nodoAEliminar = buscarNodoDeValor(root, elem); 
-        
-        if (!tieneUnaDescendencia(nodoAEliminar)){
+        if (noTieneDescendencia(nodoAEliminar)){
             nodoAEliminar = null;
         }; 
-        if (tieneUnaDescendencia(nodoAEliminar)){
+        if (tieneSoloUnaDescendencia(nodoAEliminar)){
             sucesorDadoTomaLugar(nodoAEliminar, hijoMenorOMayor(nodoAEliminar));
         }
         if (tieneDosDescendencia(nodoAEliminar)){
-            sucesorDadoTomaLugar(nodoAEliminar, inmediateSucesor(nodoAEliminar));
+            Nodo sucesor = inmediatoSucesor(nodoAEliminar);
+            sucesorDadoTomaLugar(nodoAEliminar, sucesor);
+            sucesor.hijoMenor = nodoAEliminar.hijoMenor;
         }
         length--;
     };
-    private Boolean tieneUnaDescendencia(Nodo nodoAEliminar){
-
+    private Boolean noTieneDescendencia(Nodo nodo){
+        return nodo.hijoMayor == null && nodo.hijoMenor == null;
+    }
+    private Boolean tieneSoloUnaDescendencia(Nodo nodoAEliminar){
         return ((nodoAEliminar.hijoMayor != null && nodoAEliminar.hijoMenor == null) 
             ||  (nodoAEliminar.hijoMenor != null && nodoAEliminar.hijoMayor == null));
     };
@@ -156,11 +137,12 @@ public class ABB<T extends Comparable<T>> {
 
     private void sucesorDadoTomaLugar(Nodo nodoAEliminar, Nodo sucesor){
         Nodo padreDelNodoAEliminar = nodoAEliminar.padre;
-        // Nodo sucesor = inmediateSucesor(nodoAEliminar);
-        if (padreDelNodoAEliminar == null ) root = sucesor;
-        if ( padreDelNodoAEliminar.hijoMenor != null && padreDelNodoAEliminar.hijoMenor.val.compareTo(nodoAEliminar.val) == 0){
+        // Nodo sucesor = inmediatoSucesor(nodoAEliminar);
+        if (padreDelNodoAEliminar == null ) {
+            root = sucesor;
+        }
+        else if ( padreDelNodoAEliminar.hijoMenor != null && padreDelNodoAEliminar.hijoMenor.val.compareTo(nodoAEliminar.val) == 0){
             padreDelNodoAEliminar.hijoMenor = sucesor;
-            
         } else {
             padreDelNodoAEliminar.hijoMayor = sucesor;
         };
@@ -169,24 +151,72 @@ public class ABB<T extends Comparable<T>> {
     };
 
     
-    private Nodo inmediateSucesor(Nodo actual){
-
-        return actual;
+    private Nodo inmediatoSucesor(Nodo actual){
+        if (actual.hijoMayor != null){
+            Nodo hijoMayor = actual.hijoMayor;
+            return minimoAPartirDe(hijoMayor);
+        };
+        return buscandoSucesorEnPadres(actual);
     }
 
+    private Nodo minimoAPartirDe(Nodo nuevoNodo){
+        Nodo sucesor = nuevoNodo;
+        while(sucesor.hijoMenor != null) {
+            sucesor = sucesor.hijoMenor;
+        };
+        return sucesor;
+    }
+
+    private Nodo buscandoSucesorEnPadres(Nodo nuevoNodo){
+        Boolean buscando = true;
+        Nodo sucesor = nuevoNodo;
+        while (buscando){
+            if (sucesor.padre == null || sucesor.padre.hijoMenor == sucesor ){
+                buscando = false;
+            } 
+            sucesor = sucesor.padre;
+        }
+        System.out.println(sucesor.val);
+        return sucesor;
+    }
+
+    
+
     public String toString(){
-        throw new UnsupportedOperationException("No implementada aun");
+        int cant = 0;
+        if (root == null) {return "{}";}
+
+        Nodo actual =  buscarNodoDeValor(root, minimo());
+        String res = "{";
+        while (cant < length - 1){
+            res += actual.val + ",";
+            actual = inmediatoSucesor(actual);
+            cant++;
+        } 
+        res+= actual.val + "}";
+
+
+        return res;
+
     }
 
     public class ABB_Iterador {
         private Nodo _actual;
 
         public boolean haySiguiente() {            
-            throw new UnsupportedOperationException("No implementada aun");
+            return inmediatoSucesor(_actual) != null;
         }
     
         public T siguiente() {
-            throw new UnsupportedOperationException("No implementada aun");
+            if (_actual == null){
+                _actual = buscarNodoDeValor(root, minimo());
+            }
+            else _actual = inmediatoSucesor(_actual);
+
+            return _actual.val;
+        }
+        public ABB_Iterador(){
+            _actual = null;
         }
     }
 
