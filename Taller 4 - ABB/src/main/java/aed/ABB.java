@@ -99,27 +99,30 @@ public class ABB<T extends Comparable<T>> {
 
     public boolean pertenece(T elem){
         Nodo nodoABuscar = buscarNodoDeValor(root, elem);
-        return nodoABuscar!= null && nodoABuscar.val == elem;
+        return nodoABuscar != null && nodoABuscar.val == elem;
     }
 
     public void eliminar(T elem){
         Nodo nodoAEliminar = buscarNodoDeValor(root, elem); 
         if (noTieneDescendencia(nodoAEliminar)){
             nodoAEliminar = null;
-        }; 
-        if (tieneSoloUnaDescendencia(nodoAEliminar)){
-            sucesorDadoTomaLugar(nodoAEliminar, hijoMenorOMayor(nodoAEliminar));
         }
-        if (tieneDosDescendencia(nodoAEliminar)){
-            Nodo sucesor = inmediatoSucesor(nodoAEliminar);
-            sucesorDadoTomaLugar(nodoAEliminar, sucesor);
+        else if (tieneSoloUnaDescendencia(nodoAEliminar)){
+            Nodo sucesor = hijoMenorOMayor(nodoAEliminar);
+            asignarPadreCorrectamente(nodoAEliminar, sucesor);
+            asignarCorrectamenteHijoMayor(nodoAEliminar, sucesor);
+        }
+       else if (tieneDosDescendencia(nodoAEliminar)){
+            Nodo sucesor = minimoAPartirDe(nodoAEliminar.hijoMayor);
+            asiganrHijosDeSucesor(sucesor);
+            asignarPadreCorrectamente(nodoAEliminar, sucesor);
             sucesor.hijoMenor = nodoAEliminar.hijoMenor;
-            nodoAEliminar.hijoMenor.padre = sucesor;
-            
-            if (sucesor != nodoAEliminar.hijoMayor){
-            nodoAEliminar.hijoMayor.padre = sucesor;
+            if (nodoAEliminar.hijoMenor != null)nodoAEliminar.hijoMenor.padre = sucesor;
+
             sucesor.hijoMayor = nodoAEliminar.hijoMayor;
-        }
+            if (nodoAEliminar.hijoMayor != null)nodoAEliminar.hijoMayor.padre = sucesor;
+
+
         }
         length--;
     };
@@ -135,19 +138,29 @@ public class ABB<T extends Comparable<T>> {
         return nodoAEliminar.hijoMayor != null && nodoAEliminar.hijoMenor != null;
     };
 
+    private void asiganrHijosDeSucesor(Nodo sucesor){
+        if (sucesor.padre.hijoMenor == sucesor){
+            sucesor.padre.hijoMenor = sucesor.hijoMayor;
+        } else{
+            sucesor.padre.hijoMayor = sucesor.hijoMayor;
+        }
+        if (sucesor.hijoMayor != null){
+            sucesor.hijoMayor.padre = sucesor.padre;
+        }
+    }
 
     private Nodo hijoMenorOMayor(Nodo actual){
         if (actual.hijoMayor != null) return actual.hijoMayor;
         return actual.hijoMenor;
     };
 
-    private void sucesorDadoTomaLugar(Nodo nodoAEliminar, Nodo sucesor){
+    private void asignarPadreCorrectamente(Nodo nodoAEliminar, Nodo sucesor){
         Nodo padreDelNodoAEliminar = nodoAEliminar.padre;
         // Nodo sucesor = inmediatoSucesor(nodoAEliminar);
         if (padreDelNodoAEliminar == null ) {
             root = sucesor;
         }
-        else if ( padreDelNodoAEliminar.hijoMenor != null && padreDelNodoAEliminar.hijoMenor.val.compareTo(nodoAEliminar.val) == 0){
+        else if ( padreDelNodoAEliminar.hijoMenor == nodoAEliminar){
             padreDelNodoAEliminar.hijoMenor = sucesor;
         } else {
             padreDelNodoAEliminar.hijoMayor = sucesor;
@@ -158,34 +171,50 @@ public class ABB<T extends Comparable<T>> {
 
     
     private Nodo inmediatoSucesor(Nodo actual){
+        // System.out.printf("ENtra a inmediatoSucesor " + actual.val + "||| /n");
+
         if (actual.hijoMayor != null){
             Nodo hijoMayor = actual.hijoMayor;
+            // System.out.printf("Viendo hijo mayor de " + actual.val + " --> " +  hijoMayor.val + hijoMayor.hijoMenor.hijoMenor.val +" ||| \n");
+
             return minimoAPartirDe(hijoMayor);
         };
-        return buscandoSucesorEnPadres(actual);
+        Nodo sucesor = buscandoSucesorEnPadres(actual);
+        return sucesor;
     }
 
     private Nodo minimoAPartirDe(Nodo nuevoNodo){
         Nodo sucesor = nuevoNodo;
+
         while(sucesor.hijoMenor != null) {
             sucesor = sucesor.hijoMenor;
         };
+
         return sucesor;
     }
 
     private Nodo buscandoSucesorEnPadres(Nodo nuevoNodo){
         Boolean buscando = true;
         Nodo sucesor = nuevoNodo;
+        if (sucesor.padre == null);
         while (buscando){
             if (sucesor.padre == null || sucesor.padre.hijoMenor == sucesor ){
                 buscando = false;
             } 
             sucesor = sucesor.padre;
         }
-        System.out.println(sucesor.val);
         return sucesor;
     }
 
+    private void asignarCorrectamenteHijoMayor(Nodo nodoAEliminar, Nodo sucesor){
+        if (nodoAEliminar.hijoMayor == null) return;
+        nodoAEliminar.hijoMayor.padre = sucesor;
+        if (nodoAEliminar.hijoMayor != sucesor){
+            sucesor.hijoMayor = nodoAEliminar.hijoMayor;
+
+        }
+
+    }
     
 
     public String toString(){
@@ -193,9 +222,10 @@ public class ABB<T extends Comparable<T>> {
         if (root == null) {return "{}";}
 
         Nodo actual =  buscarNodoDeValor(root, minimo());
+
         String res = "{";
         while (cant < length - 1){
-            res += actual.val + ",";
+            res += actual.val + ",";           
             actual = inmediatoSucesor(actual);
             cant++;
         } 
