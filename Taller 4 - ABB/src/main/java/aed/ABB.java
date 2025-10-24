@@ -1,7 +1,4 @@
 package aed;
-
-import java.util.*;
-
 // Todos los tipos de datos "Comparables" tienen el método compareTo()
 // elem1.compareTo(elem2) devuelve un entero. Si es mayor a 0, entonces elem1 > elem2
 public class ABB<T extends Comparable<T>> {
@@ -45,74 +42,144 @@ public class ABB<T extends Comparable<T>> {
     }
 
 
-    private Nodo buscarNodoDeValor(Nodo actual, T elem){
-        //Arrancando en root te encuentro el valor de valor elem. De no existir retorno null;
-        if (actual == null) return null;
-        if (elem.compareTo(actual.val) == 0) return actual;
-        if (elem.compareTo(actual.val) > 0) {
-            return buscarNodoDeValor(actual.hijoMayor,elem);
-        }
-        if (elem.compareTo(actual.val) < 0) {
-            return buscarNodoDeValor(actual.hijoMenor,elem);
-        }
-        return null;
+    // public Nodo buscarNodoDeValorRecursivo(Nodo actual, T elem){
+    //     //Arrancando en root te encuentro el valor de valor elem. De no existir retorno null;
+    //     if (actual == null) return null;
+    //     if (elem.compareTo(actual.val) == 0) {
+    //         return actual;
+    //     };
+    //     if (elem.compareTo(actual.val) > 0) {
+    //         return buscarNodoDeValor(actual.hijoMayor, elem);
+    //     }
+    //     if (elem.compareTo(actual.val) < 0) {
+    //         return buscarNodoDeValor(actual.hijoMenor, elem);
+    //     } 
+    //     return null;
 
+    // }
+
+    private Nodo buscarNodoDeValor(Nodo raizRelativa, T elem){
+        Nodo actual = raizRelativa;
+        Boolean buscado = true;
+        while (buscado){
+            if (actual == null || elem.compareTo(actual.val) == 0) buscado = false;
+            else if (elem.compareTo(actual.val) > 0) {
+                actual = actual.hijoMayor;
+            }
+            else if (elem.compareTo(actual.val) < 0) {
+                actual = actual.hijoMenor; 
+
+                }
+        }
+        return actual;
     }
 
     public void insertar(T elem){
         if (root != null){
-         insertarRecursivo(root, elem);
-         return;
+            insertarConWhile(elem);
+            // insertarRecursivo(root, elem);
+            Nodo debug = buscarNodoDeValor(root, elem);
+            if (debug.padre != null && debug.padre.hijoMayor == null && debug.padre.hijoMayor == null){
+                System.out.printf("|| " + debug.val + "|| ");
+
+            }
+            if ( debug.padre == debug)  System.out.printf("|| Se rompio java  " + debug.val + "|| ");
+
+
+            return;
         };
         root = new Nodo(elem); 
         length++;
     };
 
-    private void insertarRecursivo(Nodo nodo, T elem ){
-        //elem ya está en ABB
-        if (elem.compareTo(nodo.val) == 0) return;
-        // elem > nodo.val --> (nodo.hijoMayor == null --> se agrega elem como hijo mayor de nodo) v (nodo.hijoMayor != null --> recursividad con nodo.hijoMayor)
-        if (elem.compareTo(nodo.val) > 0){
-            if (nodo.hijoMayor == null){
-                Nodo nuevoNodo = new Nodo(elem);
-                nodo.hijoMayor = nuevoNodo;
-                nuevoNodo.padre = nodo;
-                length++;
-
+    private void insertarConWhile(T elem){
+        Nodo nodo = root;
+        Boolean buscando = true;
+        while (buscando){
+            if (elem.compareTo(nodo.val) == 0) {buscando = false;}
+            if (elem.compareTo(nodo.val) > 0){
+                if (nodo.hijoMayor == null){
+                    Nodo nuevoNodo = new Nodo(elem);
+                    nodo.hijoMayor = nuevoNodo;
+                    nuevoNodo.padre = nodo;
+                    buscando = false;
+                    length++;
             } else{
-                insertarRecursivo(nodo.hijoMayor, elem);
+                nodo = nodo.hijoMayor;
             }
-        };
-        // elem < nodo.val --> (nodo.hijoMenor == null --> se agrega elem como hijo Menor de nodo) v (nodo.hijoMenor != null --> recursividad con nodo.hijoMenor)
-        if (elem.compareTo(nodo.val) < 0){
+        } if (elem.compareTo(nodo.val) < 0){
             if (nodo.hijoMenor == null){
                 Nodo nuevoNodo = new Nodo(elem);
                 nodo.hijoMenor = nuevoNodo;
                 nuevoNodo.padre = nodo;
+                buscando = false;
                 length++;
-
             } else{
-                insertarRecursivo(nodo.hijoMenor, elem);
+                nodo = nodo.hijoMenor;
             }
-        }
-    };
+    }}}
+
+    // private void insertarRecursivo(Nodo nodo, T elem ){
+    //     //elem ya está en ABB
+    //     if (elem.compareTo(nodo.val) == 0) return;
+    //     // elem > nodo.val --> (nodo.hijoMayor == null --> se agrega elem como hijo mayor de nodo) v (nodo.hijoMayor != null --> recursividad con nodo.hijoMayor)
+    //     if (elem.compareTo(nodo.val) > 0){
+    //         if (nodo.hijoMayor == null){
+    //             Nodo nuevoNodo = new Nodo(elem);
+    //             nodo.hijoMayor = nuevoNodo;
+    //             nuevoNodo.padre = nodo;
+    //             length++;
+
+    //         } else{
+    //             insertarRecursivo(nodo.hijoMayor, elem);
+    //         }
+    //     };
+    //     // elem < nodo.val --> (nodo.hijoMenor == null --> se agrega elem como hijo Menor de nodo) v (nodo.hijoMenor != null --> recursividad con nodo.hijoMenor)
+    //     if (elem.compareTo(nodo.val) < 0){
+    //         if (nodo.hijoMenor == null){
+    //             Nodo nuevoNodo = new Nodo(elem);
+    //             nodo.hijoMenor = nuevoNodo;
+    //             nuevoNodo.padre = nodo;
+    //             length++;
+
+    //         } else{
+    //             insertarRecursivo(nodo.hijoMenor, elem);
+    //         }
+    //     }
+    // };
 
     public boolean pertenece(T elem){
         Nodo nodoABuscar = buscarNodoDeValor(root, elem);
-        return nodoABuscar != null && nodoABuscar.val == elem;
+        return nodoABuscar != null && elem.compareTo(nodoABuscar.val) == 0;
     }
 
     public void eliminar(T elem){
         Nodo nodoAEliminar = buscarNodoDeValor(root, elem); 
         if (noTieneDescendencia(nodoAEliminar)){
-            nodoAEliminar = null;
+            Nodo padreDelNodoAEliminar = buscarNodoDeValor(root, nodoAEliminar.padre.val);
+            // System.out.printf(" || Padre y sus hijos" + padreDelNodoAEliminar.val + padreDelNodoAEliminar.hijoMayor + padreDelNodoAEliminar.hijoMenor + "|| ");
+            System.out.printf(" || Padre y sus hijos" + nodoAEliminar.val + padreDelNodoAEliminar.val +  padreDelNodoAEliminar.hijoMenor + padreDelNodoAEliminar.hijoMayor + "|| ");
+            if (padreDelNodoAEliminar == nodoAEliminar){
+                System.out.print("ANDATE A CAGAR JAVA");
+                // nodoAEliminar = null;
+                // padreDelNodoAEliminar = null;
+            }
+
+            if ( padreDelNodoAEliminar.hijoMenor == nodoAEliminar){
+                padreDelNodoAEliminar.hijoMenor = null;
+            }
+            else if (padreDelNodoAEliminar.hijoMayor == nodoAEliminar) {
+                padreDelNodoAEliminar.hijoMayor = null;
+            };
         }
         else if (tieneSoloUnaDescendencia(nodoAEliminar)){
+
             Nodo sucesor = hijoMenorOMayor(nodoAEliminar);
             asignarPadreCorrectamente(nodoAEliminar, sucesor);
             asignarCorrectamenteHijoMayor(nodoAEliminar, sucesor);
         }
        else if (tieneDosDescendencia(nodoAEliminar)){
+
             Nodo sucesor = minimoAPartirDe(nodoAEliminar.hijoMayor);
             asiganrHijosDeSucesor(sucesor);
             asignarPadreCorrectamente(nodoAEliminar, sucesor);
@@ -125,6 +192,7 @@ public class ABB<T extends Comparable<T>> {
 
         }
         length--;
+
     };
     private Boolean noTieneDescendencia(Nodo nodo){
         return nodo.hijoMayor == null && nodo.hijoMenor == null;
@@ -162,7 +230,8 @@ public class ABB<T extends Comparable<T>> {
         }
         else if ( padreDelNodoAEliminar.hijoMenor == nodoAEliminar){
             padreDelNodoAEliminar.hijoMenor = sucesor;
-        } else {
+        }
+         else if (padreDelNodoAEliminar.hijoMayor == nodoAEliminar) {
             padreDelNodoAEliminar.hijoMayor = sucesor;
         };
         
@@ -171,11 +240,9 @@ public class ABB<T extends Comparable<T>> {
 
     
     private Nodo inmediatoSucesor(Nodo actual){
-        // System.out.printf("ENtra a inmediatoSucesor " + actual.val + "||| /n");
 
         if (actual.hijoMayor != null){
             Nodo hijoMayor = actual.hijoMayor;
-            // System.out.printf("Viendo hijo mayor de " + actual.val + " --> " +  hijoMayor.val + hijoMayor.hijoMenor.hijoMenor.val +" ||| \n");
 
             return minimoAPartirDe(hijoMayor);
         };
