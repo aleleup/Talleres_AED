@@ -1,5 +1,7 @@
 package aed;
 
+import aed.ABB.HandleABB;
+
 public class ListaEnlazada<T>  {
     private Nodo primero;
     private Nodo ultimo;
@@ -7,10 +9,10 @@ public class ListaEnlazada<T>  {
     private int longitudLista;
 
     private class Nodo {
-        public T valor;
+        public HandleABB valor;
         public Nodo siguiente;
         public Nodo anterior;
-        public Nodo(T v) { 
+        public Nodo(HandleABB v) { 
             valor = v; 
         }
 
@@ -29,7 +31,7 @@ public class ListaEnlazada<T>  {
     }
 
 
-    public void agregarAdelante(T elem) {
+    public void agregarAdelante(HandleABB elem) {
         Nodo nodoNuevo = new Nodo(elem); 
         if (primero == null && ultimo == null){
             nodoNuevo.asignarPunteros(null, null);
@@ -45,7 +47,7 @@ public class ListaEnlazada<T>  {
         longitudLista++;
     }
 
-    public void agregarAtras(T elem) {
+    public void agregarAtras(HandleABB elem) {
         Nodo nodoNuevo = new Nodo(elem); 
         if (primero == null && ultimo == null){
             nodoNuevo.asignarPunteros(null, null);
@@ -72,7 +74,7 @@ public class ListaEnlazada<T>  {
         return nodoAObtener;
     }
 
-    public T obtener(int i) {
+    public HandleABB obtener(int i) {
         return obtenerNodo(i).valor;
     }
 
@@ -90,24 +92,25 @@ public class ListaEnlazada<T>  {
         }
     }
 
-    public void eliminar(int i) {
+    public HandleABB eliminar(int i) {
         Nodo nodoAEliminar = obtenerNodo(i);
-
         Nodo anteriorAEliminar = nodoAEliminar.anterior;
         Nodo siguienteAEliminar = nodoAEliminar.siguiente;
         desconectarNodo(anteriorAEliminar, siguienteAEliminar);
+        //Eliminar handle del arbol!! 
+        nodoAEliminar.valor.eliminar();
         longitudLista--;
-        
+        return nodoAEliminar.valor;
     }
 
-    public void modificarPosicion(int indice, T elem) {
+    public void modificarPosicion(int indice, HandleABB elem) {
         Nodo nodoAModificar = obtenerNodo(indice);
         nodoAModificar.valor = elem;
     }
 
     public ListaEnlazada(ListaEnlazada<T> lista) {
         int i = 0;
-        while (i < lista.longitud()){
+        while (i < lista.longitud()) {
             agregarAtras(lista.obtener(i));
             i++;
         }
@@ -115,14 +118,15 @@ public class ListaEnlazada<T>  {
     
     @Override
     public String toString() {
+        if (primero == null && ultimo == null) return "[]";
         String listaAImprimir = new String("[");
         int i = 0;
         while(i < longitudLista - 1){
-            listaAImprimir += obtener(i) + ", ";
+            listaAImprimir += obtener(i).valor() + ", ";
             i++;
         }
 
-        listaAImprimir += ultimo.valor + "]";
+        listaAImprimir += ultimo.valor.valor() + "]";
         return listaAImprimir;
     }
 
@@ -137,16 +141,16 @@ public class ListaEnlazada<T>  {
             return posc > 0 && posc <= longitudLista;
         }
 
-        public T siguiente() {
-            T valorADevolver = obtener(posc);
+        public HandleABB siguiente() {
+            HandleABB valorADevolver = obtener(posc);
             posc++;
             return valorADevolver;
         }
         
 
-        public T anterior() {
+        public HandleABB anterior() {
             posc--;
-            T valorADevolver = obtener(posc);
+            HandleABB valorADevolver = obtener(posc);
             return valorADevolver;        }
     }
     public ListaIterador iterador() {

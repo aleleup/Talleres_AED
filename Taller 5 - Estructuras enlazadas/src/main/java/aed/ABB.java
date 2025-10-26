@@ -16,8 +16,20 @@ public class ABB<T extends Comparable<T>> {
             this.val = val;
 
         }
-
     }
+    public class HandleABB implements Handle<T> {
+        private Nodo nodo;
+        public HandleABB(Nodo n) {
+            this.nodo = n;
+        };
+        public T valor() {
+            return nodo.val;
+        }
+        public void eliminar(){
+            eliminarNodo(nodo);
+        }
+    }
+
 
     public ABB() {
         root = null;
@@ -28,9 +40,6 @@ public class ABB<T extends Comparable<T>> {
         return length;
     }
 
-    public class HandleABB {
-        /* ¡COMPLETAR! */
-    }
 
 
     private Nodo minimoAPartirDe(Nodo nuevoNodo){
@@ -58,16 +67,19 @@ public class ABB<T extends Comparable<T>> {
     }
 
     public HandleABB insertar(T elem){
+        Nodo nuevoNodo;
         if (root != null){
-            insertarConWhile(elem);
-            // return;
-        };
-        root = new Nodo(elem); 
+            nuevoNodo = insertarConWhile(elem);
+        }
+        else {
+            root = new Nodo(elem);
+            nuevoNodo = root;
+        }; 
         length++;
-        throw new UnsupportedOperationException("No implementado aún");
+        return new HandleABB(nuevoNodo);
     }
 
-     private void insertarConWhile(T elem){
+     private Nodo insertarConWhile(T elem){
         Nodo nodo = root;
         Boolean buscando = true;
         while (buscando){
@@ -78,7 +90,7 @@ public class ABB<T extends Comparable<T>> {
                     nodo.hijoMayor = nuevoNodo;
                     nuevoNodo.padre = nodo;
                     buscando = false;
-                    length++;
+                    return nuevoNodo;
             } else{
                 nodo = nodo.hijoMayor;
             }
@@ -88,11 +100,13 @@ public class ABB<T extends Comparable<T>> {
                 nodo.hijoMenor = nuevoNodo;
                 nuevoNodo.padre = nodo;
                 buscando = false;
-                length++;
+                return nuevoNodo;
             } else{
                 nodo = nodo.hijoMenor;
             }
-    }}}
+    }}
+    return null;
+}
 
     public boolean pertenece(T elem){
         Nodo nodoABuscar = buscarNodoDeValor(root, elem);
@@ -114,9 +128,13 @@ public class ABB<T extends Comparable<T>> {
         return actual;
     }
 
+
     public void eliminar(T elem){
         Nodo nodoAEliminar = buscarNodoDeValor(root, elem); 
-        
+        eliminarNodo(nodoAEliminar);
+    };
+
+    public void eliminarNodo(Nodo nodoAEliminar){
         if (noTieneDescendencia(nodoAEliminar)){
             Nodo padreDelNodoAEliminar =  nodoAEliminar.padre;
             if (padreDelNodoAEliminar == null) root = null;
@@ -128,26 +146,22 @@ public class ABB<T extends Comparable<T>> {
             }
         }
         else if (tieneSoloUnaDescendencia(nodoAEliminar)){
-
             Nodo sucesor = hijoMenorOMayor(nodoAEliminar);
             asignarPadreCorrectamente(nodoAEliminar, sucesor);
         }
        else if (tieneDosDescendencias(nodoAEliminar)){
-
             Nodo sucesor = minimoAPartirDe(nodoAEliminar.hijoMayor);
             asiganrHijosDeSucesor(sucesor);
             asignarPadreCorrectamente(nodoAEliminar, sucesor);
             sucesor.hijoMenor = nodoAEliminar.hijoMenor;
             if (nodoAEliminar.hijoMenor != null) nodoAEliminar.hijoMenor.padre = sucesor;
-
             sucesor.hijoMayor = nodoAEliminar.hijoMayor;
             if (nodoAEliminar.hijoMayor != null) nodoAEliminar.hijoMayor.padre = sucesor;
-
-
         }
         length--;
 
-    };
+    }
+
     private Boolean noTieneDescendencia(Nodo nodo){
         return nodo.hijoMayor == null && nodo.hijoMenor == null;
     }
@@ -228,7 +242,7 @@ public class ABB<T extends Comparable<T>> {
 
         String res = "{";
         while (cant < length - 1){
-            res += actual.val + ",";           
+            res += actual.val + ", ";           
             actual = inmediatoSucesor(actual);
             cant++;
         } 
